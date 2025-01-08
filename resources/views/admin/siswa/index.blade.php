@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Siswa</title>
+    <title>Data User</title>
 </head>
 <body>
-    <h1>DATA SISWA</h1>
+    <h1>DATA USER</h1>
     <a href="{{ route('admin/dashboard') }}">Menu Utama</a><br>
     <a href="{{ route('logout') }}" onclick="event.preventDefault(); documment.getElementById('logout-form').submit();">logout></a>
     <br><br>
@@ -14,68 +14,51 @@
     @csrf
 </form>
 <br><br>
+
 <form action="" method="get">
     <label>Cari :</label>
     <input type="text" name="cari">
     <input type="submit" value="cari">
 </form>
 <br><br>
-<a href="{{ route('siswa.create') }}">Tambah Siswa</a>
+<a href="{{ Route('akun.create }}">TAMBAH USER</a>
 
-@if(Session::has('success'))
-<div class="alert-success" role="alert">
-    {{ Session::get('success') }}
+<a href="">Tambah User</a>
+
+@if(session::has('success'))
+<div class="alert alert-success" role="alert">
+    {{Session::get('success') }}
 </div>
 @endif
 
-<table class="table">
+<table class="tabel">
     <tr>
-        <th>Foto</th>
-        <th>NIS</th>
         <th>Nama</th>
         <th>Email</th>
-        <th>Kelas</th>
-        <th>No Hp</th>
-        <th>Status</th>
+        <th>Role</th>
         <th>Aksi</th>
 </tr>
-@forelse ($siswas as $siswa)
+@forelse ($users as $user)
 <tr>
+    <td>{{ $user->name }}</td>
+    <td>{{ $user->email }}</td>
+    <td>{{ $user->usertype }}</td>
+    
     <td>
-        <img src="{{ asset('storage/siswas/'.$siswa->image) }}" width="120px" hight="120px" alt="">
+        <a href="{{ $user->id }}" class="btn btn-sm btn-primary">EDIT</a>
     </td>
-    <td>{{ $siswa->nis }}</td>
-    <td>{{ $siswa->name }}</td>
-    <td>{{ $siswa->email }}</td>
-    <td>{{ $siswa->tingkatan }} {{ $siswa->jurusan }} {{ $siswa->kelas }}</td>
-    <td>{{ $siswa->hp }}</td>
-   @if ($siswa->status == 1) :
-    <td>Aktif</td>
-    @else
-    <td>Tidak Aktif</td>
-    @endif
-    <td>
-        <form onsubmit="return confirm('Apakah Anda Yakin ?');" action="{{ route('siswa.destory',$siswa->id) }}" method="POST">
-            <a href="{{ route('siswa.show', $siswa->id) }}" class="btn-sm btn-dark">SHOW</a>
-            <a href="{{ route('siswa.edit', $siswa->id) }}" class="btn btn-sm btn-primary">EDIT</a>
-            @csrf
-            @method('DELETE')
-            <button type="submit">HAPUS</button>
-   </form>
-   </td>
-   </tr>
-   @empty
-   <tr>
+    <tr>
+        @empty
+    </tr>
     <td>
         <p>data tidak ditemukan</p>
-   </td>
-   <td>
-    <a href="{{ route('siswa.index') }}">kembali</a>
     </td>
-   </tr>
-   @endforelse
-   </table>
-   {{ $siswas->links() }}
-   
+    <td>
+        <a href="{{ route('akun.index') }}">kembali</a>
+    </td>
+</tr>
+@endforelse
+</table>
+{{ $users->links() }}
 </body>
 </html>
