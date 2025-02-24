@@ -21,11 +21,11 @@
 </div>
 @endif
 
-<form action="{{route('akun.store') }}" method="POST">
+<form action="{{ route('akun.store') }}" method="POST">
 
 @csrf 
-<label>Nama Lengkap</label><br>
-<input type="text" id="name" name="email" value="{{old('email') }}"><br>
+<label> Nama Lengkap </label><br>
+<input type="text" id="name" name="name" value="{{ old('name') }}"><br>
 
 <br>
 <label>Email Address</label><br>
@@ -43,9 +43,9 @@
 
 <label> Hak Akses></label><br>
 <select name="usertype" required>
-    <option value="">pilih hak akses></option>
-    <option value="admin">admin></option>
-    <option value="ptk">ptk></option>
+    <option value="">pilih hak akses</option>
+    <option value="admin">admin</option>
+    <option value="ptk">PTK</option>
 </select>
 <br><br>
 
