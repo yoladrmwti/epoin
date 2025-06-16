@@ -42,7 +42,7 @@
 @endif
 
 <form action="{{ route('pelanggaran.update',$pelanggaran->id) }}" method="POST" enctype="multipart/form-data">
-    @csrf@method('PUT')
+    @csrf @method('PUT')
     <h2>Data Pelanggaran</h2>
     <label>Jenis pelanggaran</label><br>
     <textarea id="jenis" name="jenis" cols="50" rows="7" value="{{ old('jenis') }}">{{ $pelanggaran->jenis }}</textarea>

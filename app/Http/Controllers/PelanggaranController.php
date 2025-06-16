@@ -3,20 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggaran;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class PelanggaranController extends Controller
 {
     public function index(): View
     {
-        //get Data db
+        // Ambil data pelanggaran terbaru dan paginasi 10 per halaman
         $pelanggarans = Pelanggaran::latest()->paginate(10);
 
+        // Jika ada parameter pencarian, gunakan method search
         if (request('cari')) {
             $pelanggarans = $this->search(request('cari'));
         }
@@ -24,75 +23,68 @@ class PelanggaranController extends Controller
         return view('admin.pelanggaran.index', compact('pelanggarans'));
     }
 
-    public function create()
+    public function create(): View
     {
         return view('admin.pelanggaran.create');
     }
-public function store(Request $request)
-{
-    $request->validate([
-        'jenis' => 'required|string|max:250',
-        'konsekuensi' => 'required|string|max:250',
-        'poin' => 'required'
-    ]);
 
-    Pelanggaran::create([
-        'jenis' => $request->jenis,
-        'konsekuensi' => $request->konsekuensi,
-        'poin' => $request->poin
-    ]);
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'jenis' => 'required|string|max:250',
+            'konsekuensi' => 'required|string|max:250',
+            'poin' => 'required|numeric'
+        ]);
 
-    return redirect()->route('pelanggaran.index')->with(['success' => 'Data Berhasil Disimpan!']);
- }
+        Pelanggaran::create([
+            'jenis' => $request->jenis,
+            'konsekuensi' => $request->konsekuensi,
+            'poin' => $request->poin
+        ]);
 
- public function search(string $cari)
- {
-    $pelanggarans = DB::table('pelanggarans')->where(DB::raw('lower(jenis)'), 'like', '%' . strtolower($cari) . '%')->paginate(10);
- return $pelanggarans;
-}
+        return redirect()->route('pelanggaran.index')->with(['success' => 'Data Berhasil Disimpan!']);
+    }
 
-public function edit(string $id): View
-{
-    //get Data db
-     $pelanggaran = Pelanggaran::where('id',$id)
-     ->first();
+    public function search(string $cari): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        $pelanggarans = DB::table('pelanggarans')
+            ->where(DB::raw('lower(jenis)'), 'like', '%' . strtolower($cari) . '%')
+            ->paginate(10);
 
-     return view('admin.pelanggaran.edit', compact('pelanggaran'));
-}
- 
-public function update(Request $request, $id): RedirectResponse
-{
-    //validate form
-    $validate = $request->validate([
-        'jenis' => 'required|string|max:250',
-        'konsekuensi' => 'required|string|max:250',
-        'poin' => 'required'
-    ]);
+        return $pelanggarans;
+    }
 
-    //get post bby ID
-    $datas = Pelanggaran::findOrFail($id);
-    //edit akun
+    public function edit(string $id): View
+    {
+        $pelanggaran = Pelanggaran::findOrFail($id);
 
-    $datas->update([
-        'jenis' => $request->jenis,
-        'konsekuensi' => $request->konsekuensi,
-        'poin' => $request->poin
-    ]);
+        return view('admin.pelanggaran.edit', compact('pelanggaran'));
+    }
 
-    //redirect to index
-    return redirect()->route('pelanggaran.edit', $id)->wit([ 'success' => 'Data Berhasil Diubah!']);
-}
- 
-public function destroy($id): RedirectResponse
-{
-    //get post by ID
-    $post = Pelanggaran::findOrFail($id);
+    public function update(Request $request, string $id): RedirectResponse
+    {
+        $request->validate([
+            'jenis' => 'required|string|max:250',
+            'konsekuensi' => 'required|string|max:250',
+            'poin' => 'required|numeric'
+        ]);
 
-    //delete post
-    $post->delete();
+        $pelanggaran = Pelanggaran::findOrFail($id);
 
-    //redirect to index
-    return redirect()->route('pelanggaran.index')->with([ 'success' => 'pelanggaran berhasil dihapus!']);
+        $pelanggaran->update([
+            'jenis' => $request->jenis,
+            'konsekuensi' => $request->konsekuensi,
+            'poin' => $request->poin
+        ]);
 
-  }
+        return redirect()->route('pelanggaran.edit', $id)->with(['success' => 'Data Berhasil Diubah!']);
+    }
+
+    public function destroy(string $id): RedirectResponse
+    {
+        $pelanggaran = Pelanggaran::findOrFail($id);
+        $pelanggaran->delete();
+
+        return redirect()->route('pelanggaran.index')->with(['success' => 'Data pelanggaran berhasil dihapus!']);
+    }
 }
